@@ -1,0 +1,9 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: ${MYSQL_DATABASE_URL:jdbc:mysql://0.0.0.0:3306/flowable?characterEncoding=UTF-8}
+    username: ${MYSQL_DATABASE_USERNAME:flowable}
+    password: ${MYSQL_DATABASE_PASSWORD:flowable}
+    driver-class-name=com: com.mysql.cj.jdbc.Driver

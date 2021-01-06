@@ -1,0 +1,97 @@
+version: '3.2'
+
+services:
+  flowable-ui:
+    build:
+      context: flowable-ui/
+    ports:
+      - "8080:8080"
+    networks:
+      - flowable-mysql
+    depends_on:
+      - mysql-db
+
+  mysql-db:
+    build:
+      context: mysql-server/
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: flowable
+      MYSQL_USER: flowable
+      MYSQL_PASSWORD: flowable
+      MYSQL_DATABASE: flowable
+    networks:
+      - flowable-mysql
+
+  config:
+    environment:
+      CONFIG_SERVICE_PASSWORD: password
+    build:
+      context: config/
+    restart: always
+#    ports:
+#      - "8888:8888"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
+    networks:
+      - flowable-mysql
+
+  flowable-tut:
+    build:
+      context: flowable-tut/
+    ports:
+      - "8081:8081"
+    environment:
+      MYSQL_DATABASE_URL: "jdbc:mysql://mysql-db:3306/flowable?characterEncoding=UTF-8"
+      MYSQL_DATABASE_USERNAME: flowable
+      MYSQL_DATABASE_PASSWORD: flowable
+      CONFIG_SERVICE_PASSWORD: password
+    networks:
+      - flowable-mysql
+    depends_on:
+      config:
+        condition: service_healthy
+
+  registry:
+    environment:
+      CONFIG_SERVICE_PASSWORD: password
+    build:
+      context: registry/
+    restart: always
+    depends_on:
+      config:
+        condition: service_healthy
+    ports:
+      - 8761:8761
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
+    networks:
+      - flowable-mysql
+
+  gateway:
+    environment:
+      CONFIG_SERVICE_PASSWORD: password
+    build:
+      context: gateway/
+    restart: always
+    depends_on:
+      config:
+        condition: service_healthy
+    ports:
+      - 80:4000
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
+    networks:
+      - flowable-mysql
+
+networks:
+  flowable-mysql:
+    driver: bridge
+
