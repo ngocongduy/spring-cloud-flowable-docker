@@ -11,13 +11,10 @@ import lombok.experimental.FieldDefaults;
 import org.example.tut.flowable.dto.HolidayRequest;
 import org.example.tut.flowable.dto.ProcessInstanceResponse;
 import org.example.tut.flowable.dto.TaskDetails;
-import org.flowable.engine.HistoryService;
-import org.flowable.engine.ProcessEngine;
-import org.flowable.engine.RepositoryService;
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.TaskService;
+import org.flowable.engine.*;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.repository.Deployment;
+import org.flowable.engine.runtime.ActivityInstance;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +33,8 @@ public class HolidayService {
     ProcessEngine processEngine;
     RepositoryService repositoryService;
 
+    public static final String MY_TEST_PROCESS = "myTestProcess";
+
     //********************************************************** deployment service methods **********************************************************
 
     public void deployProcessDefinition() {
@@ -44,6 +43,7 @@ public class HolidayService {
                 repositoryService
                         .createDeployment()
                         .addClasspathResource("holiday-request.bpmn20.xml")
+                        .addClasspathResource("Test_Process.bpmn20.xml")
                         .deploy();
 
 
@@ -64,7 +64,6 @@ public class HolidayService {
 
         return new ProcessInstanceResponse(processInstance.getId(), processInstance.isEnded());
     }
-
 
     public List<TaskDetails> getManagerTasks() {
         List<Task> tasks =
@@ -125,5 +124,147 @@ public class HolidayService {
 
         System.out.println("\n \n \n \n");
     }
+
+
+    public ProcessInstanceResponse startMyTestProcess() {
+
+        Map<String, Object> variables = new HashMap<String, Object>();
+        String assignee = "assignee";
+        String assigneeValue = "MyLovelyAssignee";
+        variables.put(assignee, assigneeValue);
+        System.out.println("About to start" + MY_TEST_PROCESS);
+        ProcessInstance processInstance =
+                runtimeService.startProcessInstanceByKey(MY_TEST_PROCESS, variables);
+
+        System.out.println("Get user task with assignee: " + assigneeValue);
+
+        List<TaskDetails> taskDetails = getMyUserTasks(assigneeValue);
+        System.out.println("May found some tasks ...");
+        for (TaskDetails details: taskDetails
+        ) {
+            System.out.println(details.toString());
+        }
+        return new ProcessInstanceResponse(processInstance.getId(), processInstance.isEnded());
+    }
+
+
+    private List<TaskDetails> getMyUserTasks(String assignee) {
+        System.out.println("Try to get user tasks ..., assignee: " + assignee);
+        List<Task> tasks = taskService.createTaskQuery().taskAssignee(assignee).list();
+        List<TaskDetails> taskDetails = getTaskDetails(tasks);
+        return taskDetails;
+    }
+
+    public ProcessInstanceResponse completeWithForm(String processInstanceId, String taskId) {
+        String formKey = "helloForm";
+        System.out.println("Complete task by " + taskId + " and form: "+ formKey);
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("helloMessage", "Default message set programmatically");
+        taskService.completeTaskWithForm(taskId,formKey,null,null);
+        HistoryService historyService = processEngine.getHistoryService();
+        List<HistoricActivityInstance> activities =
+                historyService
+                        .createHistoricActivityInstanceQuery()
+                        .processInstanceId(processInstanceId)
+                        .finished()
+                        .orderByHistoricActivityInstanceEndTime()
+                        .desc()
+                        .list();
+        boolean isFound = false;
+        for (HistoricActivityInstance instance: activities
+        ) {
+            System.out.println(instance.toString());
+            isFound = true;
+        }
+        return new ProcessInstanceResponse(processInstanceId, isFound);
+    }
+
+    public ProcessInstanceResponse completeMyProcess(String processInstanceId, String taskId) {
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("helloMessage", "Hello from service");
+        taskService.complete(taskId, variables);
+        HistoryService historyService = processEngine.getHistoryService();
+        List<HistoricActivityInstance> activities =
+                historyService
+                        .createHistoricActivityInstanceQuery()
+                        .processInstanceId(processInstanceId)
+                        .finished()
+                        .orderByHistoricActivityInstanceEndTime()
+                        .desc()
+                        .list();
+        boolean isFound = false;
+        for (HistoricActivityInstance instance: activities
+        ) {
+            System.out.println(instance.toString());
+            isFound = true;
+        }
+        return new ProcessInstanceResponse(processInstanceId, isFound);
+    }
+
+    public ProcessInstanceResponse resumeARunningProcess(String processInstanceId){
+        List<ActivityInstance> acts =  runtimeService.createActivityInstanceQuery().processInstanceId(processInstanceId).orderByActivityId().asc().list();
+        ActivityInstance lastAct = null;
+        if (acts.size() >= 1){
+            lastAct = acts.get(0);
+            for (ActivityInstance a: acts
+                 ) {
+                System.out.println(a.toString());
+            }
+        }
+        if(lastAct == null){
+            return null;
+        }
+        else{
+            String taskId = lastAct.getTaskId();
+            System.out.println("Try to complete Task ... " + taskId);
+            taskService.complete(taskId);
+            System.out.println("About to check whether the whole process is completed");
+        HistoryService historyService = processEngine.getHistoryService();
+        List<HistoricActivityInstance> activities =
+                historyService
+                        .createHistoricActivityInstanceQuery()
+                        .processInstanceId(processInstanceId)
+                        .finished()
+                        .orderByHistoricActivityInstanceEndTime()
+                        .desc()
+                        .list();
+        boolean isFound = false;
+        for (HistoricActivityInstance instance: activities
+        ) {
+            System.out.println(instance.toString());
+            isFound = true;
+        }
+        return new ProcessInstanceResponse(processInstanceId, isFound);
+
+        }
+    }
+    public ProcessInstanceResponse resumeASuspendedProcess(String processInstanceId){
+        runtimeService.activateProcessInstanceById(processInstanceId);
+        HistoryService historyService = processEngine.getHistoryService();
+        List<HistoricActivityInstance> activities =
+                historyService
+                        .createHistoricActivityInstanceQuery()
+                        .processInstanceId(processInstanceId)
+                        .finished()
+                        .orderByHistoricActivityInstanceEndTime()
+                        .desc()
+                        .list();
+        boolean isFound = false;
+        for (HistoricActivityInstance instance: activities
+        ) {
+            System.out.println(instance.toString());
+            isFound = true;
+        }
+        return new ProcessInstanceResponse(processInstanceId, isFound);
+    }
+
+    public void suspendAProcess(String processInstanceId){
+        runtimeService.suspendProcessInstanceById(processInstanceId);
+    }
+
+    public void triggerAExecution(String executionId){
+        runtimeService.trigger(executionId);
+    }
+
 
 }

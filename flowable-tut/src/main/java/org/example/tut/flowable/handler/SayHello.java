@@ -12,7 +12,8 @@ public class SayHello implements JavaDelegate {
     public void execute(DelegateExecution execution) {
 
         log.info("Say hello is really enjoyable!!!");
-
+        log.info(execution.getVariables().toString());
+        log.info("End greeting ---!");
     }
 }
 

@@ -11,17 +11,21 @@ ribbon:
   ConnectTimeout: 20000
 
 zuul:
+  # Ignored all other services except declared ones in routes
   ignoredServices: '*'
   host:
     connect-timeout-millis: 20000
     socket-timeout-millis: 20000
 
   routes:
-    auth-service:
-        path: /flowable/**
-        url: http://flowable-tut:8081
-        stripPrefix: false
-        sensitiveHeaders:
+    # Read more about zuul to use this way
+#    flowable-tut:
+#      path: /flowable/**
+#      url: http://flowable-tut:8081
+#      stripPrefix: false
+    flowable-tut:
+      path: /flowable/**
+      serviceId: flowable-tut
 
 server:
   port: 4000

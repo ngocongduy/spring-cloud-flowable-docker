@@ -30,8 +30,8 @@ services:
     build:
       context: config/
     restart: always
-#    ports:
-#      - "8888:8888"
+    ports:
+      - "8888:8888"
     logging:
       options:
         max-size: "10m"

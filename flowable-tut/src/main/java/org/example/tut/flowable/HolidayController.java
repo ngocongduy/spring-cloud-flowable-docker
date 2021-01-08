@@ -33,7 +33,6 @@ public class HolidayController {
         return holidayService.applyHoliday(holidayRequest);
     }
 
-
     @GetMapping("/manager/tasks")
     public List<TaskDetails> getTasks() {
         return holidayService.getManagerTasks();
@@ -61,6 +60,51 @@ public class HolidayController {
         holidayService.checkProcessHistory(processId);
     }
 
+    @GetMapping("/start")
+    public ProcessInstanceResponse testMyProccess() {
+        return holidayService.startMyTestProcess();
+    }
 
+    @GetMapping("/complete/{processInstanceId}/{taskId}")
+    public ProcessInstanceResponse completeMyProccess(
+            @PathVariable("processInstanceId") String processInstanceId,@PathVariable("taskId") String taskId
+    ) {
+        return holidayService.completeMyProcess(processInstanceId, taskId);
+    }
+
+    @GetMapping("/form-complete/{processInstanceId}/{taskId}")
+    public ProcessInstanceResponse completeMyProccessWithForm(
+            @PathVariable("processInstanceId") String processInstanceId,@PathVariable("taskId") String taskId
+    ) {
+        return holidayService.completeWithForm(processInstanceId, taskId);
+    }
+
+    @GetMapping("/resume-suspend/{processInstanceId}")
+    public ProcessInstanceResponse resumeAProcess(
+            @PathVariable("processInstanceId") String processInstanceId
+    ) {
+        return holidayService.resumeASuspendedProcess(processInstanceId);
+    }
+
+    @GetMapping("/suspend/{processInstanceId}")
+    public String suspendAProcess(
+            @PathVariable("processInstanceId") String processInstanceId
+    ) {
+        holidayService.suspendAProcess(processInstanceId);
+        return "Suspend process: " + processInstanceId;
+    }
+    @GetMapping("/trigger/{executionId}")
+    public String triggerAnExecution(
+            @PathVariable("executionId") String executionId
+    ) {
+        holidayService.triggerAExecution(executionId);
+        return "Trigger exec: " + executionId;
+    }
+    @GetMapping("/resume/{processInstanceId}")
+    public ProcessInstanceResponse resumeARunningProcess(
+            @PathVariable("processInstanceId") String processInstanceId
+    ) {
+        return holidayService.resumeARunningProcess(processInstanceId);
+    }
 
 }
