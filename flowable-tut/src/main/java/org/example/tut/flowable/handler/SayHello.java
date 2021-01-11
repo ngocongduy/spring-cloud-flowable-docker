@@ -13,6 +13,19 @@ public class SayHello implements JavaDelegate {
 
         log.info("Say hello is really enjoyable!!!");
         log.info(execution.getVariables().toString());
+        String shouldSayHelloValue = execution.getVariables().getOrDefault("shouldSayHelloValue","").toString();
+        if (shouldSayHelloValue.isEmpty()){
+            log.info("No value for shouldSayHelloValue or error ...");
+        }
+        else if (shouldSayHelloValue.equals("true")){
+            log.info("shouldSayHelloValue is " + shouldSayHelloValue);
+        }
+        else if (shouldSayHelloValue.equals("false")){
+            log.info("shouldSayHelloValue is " + shouldSayHelloValue);
+        }
+        else{
+            log.info("Unpredictable case!!!");
+        }
         log.info("End greeting ---!");
     }
 }

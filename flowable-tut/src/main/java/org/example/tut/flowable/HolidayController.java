@@ -8,11 +8,8 @@ import lombok.experimental.FieldDefaults;
 import org.example.tut.flowable.dto.HolidayRequest;
 import org.example.tut.flowable.dto.ProcessInstanceResponse;
 import org.example.tut.flowable.dto.TaskDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.hibernate.query.QueryParameter;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -60,18 +57,36 @@ public class HolidayController {
         holidayService.checkProcessHistory(processId);
     }
 
+    // My code start from here
+
+    // Start a process
     @GetMapping("/start")
     public ProcessInstanceResponse testMyProccess() {
         return holidayService.startMyTestProcess();
     }
 
+    // Complete a process, need to find the waiting task (user task) in database
+    // request parameter 'say' is used for decision table in the process
     @GetMapping("/complete/{processInstanceId}/{taskId}")
     public ProcessInstanceResponse completeMyProccess(
-            @PathVariable("processInstanceId") String processInstanceId,@PathVariable("taskId") String taskId
+            @PathVariable("processInstanceId") String processInstanceId,@PathVariable("taskId") String taskId,
+            @RequestParam(name = "say") String shouldSayHello
     ) {
+        if (shouldSayHello != null){
+            return holidayService.completeMyProcessWithDecisionTable(processInstanceId,taskId,shouldSayHello);
+        }
         return holidayService.completeMyProcess(processInstanceId, taskId);
     }
 
+    // Naively pick the last waiting task (such as a user tasK) and try to complete that task with hard-coded value to finish the process
+    @GetMapping("/resume/{processInstanceId}")
+    public ProcessInstanceResponse resumeARunningProcess(
+            @PathVariable("processInstanceId") String processInstanceId
+    ) {
+        return holidayService.resumeARunningProcess(processInstanceId);
+    }
+
+    // Complete a process using form engine
     @GetMapping("/form-complete/{processInstanceId}/{taskId}")
     public ProcessInstanceResponse completeMyProccessWithForm(
             @PathVariable("processInstanceId") String processInstanceId,@PathVariable("taskId") String taskId
@@ -79,6 +94,7 @@ public class HolidayController {
         return holidayService.completeWithForm(processInstanceId, taskId);
     }
 
+    // Resume suspended process
     @GetMapping("/resume-suspend/{processInstanceId}")
     public ProcessInstanceResponse resumeAProcess(
             @PathVariable("processInstanceId") String processInstanceId
@@ -86,6 +102,7 @@ public class HolidayController {
         return holidayService.resumeASuspendedProcess(processInstanceId);
     }
 
+    // Suspend a process
     @GetMapping("/suspend/{processInstanceId}")
     public String suspendAProcess(
             @PathVariable("processInstanceId") String processInstanceId
@@ -93,6 +110,8 @@ public class HolidayController {
         holidayService.suspendAProcess(processInstanceId);
         return "Suspend process: " + processInstanceId;
     }
+
+    // Not yet understand ..
     @GetMapping("/trigger/{executionId}")
     public String triggerAnExecution(
             @PathVariable("executionId") String executionId
@@ -100,11 +119,6 @@ public class HolidayController {
         holidayService.triggerAExecution(executionId);
         return "Trigger exec: " + executionId;
     }
-    @GetMapping("/resume/{processInstanceId}")
-    public ProcessInstanceResponse resumeARunningProcess(
-            @PathVariable("processInstanceId") String processInstanceId
-    ) {
-        return holidayService.resumeARunningProcess(processInstanceId);
-    }
+
 
 }

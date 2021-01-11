@@ -201,6 +201,29 @@ public class HolidayService {
         return new ProcessInstanceResponse(processInstanceId, isFound);
     }
 
+    public ProcessInstanceResponse completeMyProcessWithDecisionTable(String processInstanceId, String taskId, String shouldSayHello) {
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("helloMessage", "Hello from service");
+        variables.put("shouldSayHello",shouldSayHello);
+        taskService.complete(taskId, variables);
+        HistoryService historyService = processEngine.getHistoryService();
+        List<HistoricActivityInstance> activities =
+                historyService
+                        .createHistoricActivityInstanceQuery()
+                        .processInstanceId(processInstanceId)
+                        .finished()
+                        .orderByHistoricActivityInstanceEndTime()
+                        .desc()
+                        .list();
+        boolean isFound = false;
+        for (HistoricActivityInstance instance: activities
+        ) {
+            System.out.println(instance.toString());
+            isFound = true;
+        }
+        return new ProcessInstanceResponse(processInstanceId, isFound);
+    }
+
     public ProcessInstanceResponse resumeARunningProcess(String processInstanceId){
         List<ActivityInstance> acts =  runtimeService.createActivityInstanceQuery().processInstanceId(processInstanceId).orderByActivityId().asc().list();
         ActivityInstance lastAct = null;

@@ -4,27 +4,80 @@
     <startEvent id="startEvent1" flowable:formFieldValidation="true"></startEvent>
     <endEvent id="sid-AACBB63F-AB7F-4E86-B3D9-97E451845C43"></endEvent>
     <serviceTask id="sayHello" name="Say hello" flowable:class="org.example.tut.flowable.handler.SayHello"></serviceTask>
-    <sequenceFlow id="sid-A33E9BF7-C907-432A-AC88-3AE27C948A3D" sourceRef="startEvent1" targetRef="sayHello"></sequenceFlow>
     <sequenceFlow id="sid-19AE82E4-328B-40B8-ABE5-363B57AB3A39" sourceRef="sayHello" targetRef="sid-AACBB63F-AB7F-4E86-B3D9-97E451845C43"></sequenceFlow>
+    <userTask id="inputMessage" name="Input hello message" flowable:assignee="${assignee}" flowable:formKey="helloForm" flowable:formFieldValidation="true">
+      <extensionElements>
+        <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[true]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-1A4DDC21-7331-4D07-9404-28C03A56C1DF" sourceRef="inputMessage" targetRef="decisionTask"></sequenceFlow>
+    <scriptTask id="set-default-script-task" name="Set some default variables" scriptFormat="javascript" flowable:autoStoreVariables="false">
+      <script><![CDATA[execution.setVariable("assignee","DefaultAssignee");
+execution.setVariable("helloMessage","Default message from script task");
+execution.setVariable("shouldSayHello","");]]></script>
+    </scriptTask>
+    <sequenceFlow id="sid-A33E9BF7-C907-432A-AC88-3AE27C948A3D" sourceRef="startEvent1" targetRef="set-default-script-task"></sequenceFlow>
+    <sequenceFlow id="sid-4734443B-3198-423D-8A8B-8AB4A08543F4" sourceRef="set-default-script-task" targetRef="inputMessage"></sequenceFlow>
+    <serviceTask id="decisionTask" name="Decision To Say Hello" flowable:type="dmn">
+      <extensionElements>
+        <flowable:field name="decisionTableReferenceKey">
+          <flowable:string><![CDATA[decisionTableToSayHello]]></flowable:string>
+        </flowable:field>
+        <flowable:field name="decisionTaskThrowErrorOnNoHits">
+          <flowable:string><![CDATA[false]]></flowable:string>
+        </flowable:field>
+        <flowable:field name="fallbackToDefaultTenant">
+          <flowable:string><![CDATA[false]]></flowable:string>
+        </flowable:field>
+        <flowable:field name="sameDeployment">
+          <flowable:string><![CDATA[false]]></flowable:string>
+        </flowable:field>
+        <flowable:decisionReferenceType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[decisionService]]></flowable:decisionReferenceType>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-58B79932-687E-4988-A4CB-EC0FC8800777" sourceRef="decisionTask" targetRef="sayHello"></sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_myTestProcess">
     <bpmndi:BPMNPlane bpmnElement="myTestProcess" id="BPMNPlane_myTestProcess">
       <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
-        <omgdc:Bounds height="30.0" width="30.0" x="100.0" y="163.0"></omgdc:Bounds>
+        <omgdc:Bounds height="30.0" width="30.0" x="45.0" y="120.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sid-AACBB63F-AB7F-4E86-B3D9-97E451845C43" id="BPMNShape_sid-AACBB63F-AB7F-4E86-B3D9-97E451845C43">
-        <omgdc:Bounds height="28.0" width="28.0" x="372.0" y="226.0"></omgdc:Bounds>
+        <omgdc:Bounds height="28.0" width="28.0" x="720.0" y="113.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sayHello" id="BPMNShape_sayHello">
-        <omgdc:Bounds height="80.0" width="100.0" x="221.0" y="87.0"></omgdc:Bounds>
+        <omgdc:Bounds height="80.0" width="100.0" x="525.0" y="81.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="inputMessage" id="BPMNShape_inputMessage">
+        <omgdc:Bounds height="80.0" width="100.0" x="330.0" y="81.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="set-default-script-task" id="BPMNShape_set-default-script-task">
+        <omgdc:Bounds height="80.0" width="100.0" x="165.0" y="87.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="decisionTask" id="BPMNShape_decisionTask">
+        <omgdc:Bounds height="80.0" width="100.0" x="421.0" y="236.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-1A4DDC21-7331-4D07-9404-28C03A56C1DF" id="BPMNEdge_sid-1A4DDC21-7331-4D07-9404-28C03A56C1DF">
+        <omgdi:waypoint x="392.4288888888889" y="160.95"></omgdi:waypoint>
+        <omgdi:waypoint x="421.0" y="252.67776456599287"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-19AE82E4-328B-40B8-ABE5-363B57AB3A39" id="BPMNEdge_sid-19AE82E4-328B-40B8-ABE5-363B57AB3A39">
-        <omgdi:waypoint x="311.6567669172932" y="166.95"></omgdi:waypoint>
-        <omgdi:waypoint x="376.0136522300354" y="230.18771846567765"></omgdi:waypoint>
+        <omgdi:waypoint x="624.9499999999999" y="121.0"></omgdi:waypoint>
+        <omgdi:waypoint x="672.5" y="121.0"></omgdi:waypoint>
+        <omgdi:waypoint x="672.5" y="127.0"></omgdi:waypoint>
+        <omgdi:waypoint x="720.0" y="127.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4734443B-3198-423D-8A8B-8AB4A08543F4" id="BPMNEdge_sid-4734443B-3198-423D-8A8B-8AB4A08543F4">
+        <omgdi:waypoint x="264.9499999999996" y="125.18181818181817"></omgdi:waypoint>
+        <omgdi:waypoint x="330.0" y="122.81636363636362"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-58B79932-687E-4988-A4CB-EC0FC8800777" id="BPMNEdge_sid-58B79932-687E-4988-A4CB-EC0FC8800777">
+        <omgdi:waypoint x="497.8051612903226" y="236.0"></omgdi:waypoint>
+        <omgdi:waypoint x="548.1612903225806" y="160.95"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-A33E9BF7-C907-432A-AC88-3AE27C948A3D" id="BPMNEdge_sid-A33E9BF7-C907-432A-AC88-3AE27C948A3D">
-        <omgdi:waypoint x="129.2137462437338" y="173.33765735311528"></omgdi:waypoint>
-        <omgdi:waypoint x="221.0" y="143.3298076923077"></omgdi:waypoint>
+        <omgdi:waypoint x="74.9082962796576" y="133.8710825054829"></omgdi:waypoint>
+        <omgdi:waypoint x="164.9999999999997" y="127.07169811320753"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

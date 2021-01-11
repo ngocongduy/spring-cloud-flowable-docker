@@ -1,0 +1,36 @@
+<definitions xmlns="http://www.omg.org/spec/DMN/20180521/MODEL/" xmlns:dmndi="http://www.omg.org/spec/DMN/20180521/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" id="definition_25b8f888-53e4-11eb-b77f-0242ac150004" name="DecisionTableToSayHello" namespace="http://www.flowable.org/dmn">
+  <decision id="decisionTableToSayHello" name="DecisionTableToSayHello">
+    <decisionTable id="decisionTable_898c8e53-3e4d-4473-a5d4-07b1a68a1cca" hitPolicy="FIRST">
+      <input label="Should say hello">
+        <inputExpression id="inputExpression_81036b8c-1395-45c6-b3cb-4e85d4166f4b" typeRef="string">
+          <text>shouldSayHello</text>
+        </inputExpression>
+        <inputValues>
+          <text>"say"</text>
+        </inputValues>
+      </input>
+      <output id="outputExpression_4143a916-bd1f-40c4-b29d-89f78aae26c3" label="Value to evaluate" name="shouldSayHelloValue" typeRef="string">
+        <outputValues>
+          <text>"true","false"</text>
+        </outputValues>
+      </output>
+      <rule>
+        <inputEntry id="inputEntry_81036b8c-1395-45c6-b3cb-4e85d4166f4b_1">
+          <text><![CDATA[== "say"]]></text>
+        </inputEntry>
+        <outputEntry id="outputEntry_4143a916-bd1f-40c4-b29d-89f78aae26c3_1">
+          <text><![CDATA["true"]]></text>
+        </outputEntry>
+      </rule>
+      <rule>
+        <inputEntry id="inputEntry_81036b8c-1395-45c6-b3cb-4e85d4166f4b_2">
+          <text><![CDATA[-]]></text>
+        </inputEntry>
+        <outputEntry id="outputEntry_4143a916-bd1f-40c4-b29d-89f78aae26c3_2">
+          <text><![CDATA["false"]]></text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI></dmndi:DMNDI>
+</definitions>
