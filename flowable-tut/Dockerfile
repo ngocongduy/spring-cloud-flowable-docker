@@ -28,3 +28,6 @@ COPY ${JAR_FILE} app.jar
 # ENTRYPOINT ["java","-jar","app.jar"]
 CMD ["java","-jar","app.jar"]
 EXPOSE 8081
+
+# For RabbitMq to be at: localhost:5672
+#EXPOSE 5672

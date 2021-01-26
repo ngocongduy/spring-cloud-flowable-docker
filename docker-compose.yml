@@ -91,6 +91,17 @@ services:
     networks:
       - flowable-mysql
 
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    expose:
+      - 5672
+    networks:
+      - flowable-mysql
+
+
 networks:
   flowable-mysql:
     driver: bridge
