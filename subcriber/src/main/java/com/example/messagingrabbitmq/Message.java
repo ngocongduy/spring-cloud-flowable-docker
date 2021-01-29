@@ -29,4 +29,7 @@ public class Message implements Serializable {
     public void setProcessInstanceId(String processInstanceId) {
         this.processInstanceId = processInstanceId;
     }
+    public String toString() {
+        return "Message(message=" + this.getMessage() + ", processInstanceId=" + this.getProcessInstanceId() + ")";
+    }
 }

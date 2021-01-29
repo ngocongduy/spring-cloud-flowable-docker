@@ -7,6 +7,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -91,5 +92,29 @@ public class RabbitMqConfig {
 //    private MessageListener otherListenerAdapter() {
 //        return otherListenerAdapter();
 //    }
+
+//    @Bean
+//    public DirectExchange directExchange() {
+//        return new DirectExchange("req-res");
+//    }
+//
+//    @Bean
+//    public Queue queue() {
+//        return new Queue("request-queue");
+//    }
+//
+//    @Bean
+//    public Binding binding(DirectExchange directExchange,
+//                           Queue queue) {
+//        return BindingBuilder.bind(queue)
+//                .to(directExchange)
+//                .with("req.res");
+//    }
+
+    // Subcriber only need this one to convert incomming message
+    @Bean
+    public MessageConverter jackson2MessageConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
 
 }

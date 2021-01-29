@@ -27,7 +27,7 @@ public class RabbitMqController {
         return rabbitMqService.startMqTestProcess();
     }
 
-    // Start a process
+    // Resume a process by sending a trigger
     @GetMapping("/resume/{processInstanceId}")
     public ProcessInstanceResponse continueMqProcess(@PathVariable("processInstanceId") String pid) {
         return rabbitMqService.continueMqTestProcess(pid);

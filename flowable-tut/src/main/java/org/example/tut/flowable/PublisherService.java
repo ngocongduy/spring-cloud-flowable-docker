@@ -5,6 +5,7 @@ import org.flowable.engine.delegate.DelegateExecution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+// This class is dedicated for flowable engine service tasks
 @Component("PublisherService")
 @Slf4j
 public class PublisherService {

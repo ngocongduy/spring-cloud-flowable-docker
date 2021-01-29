@@ -52,8 +52,17 @@ services:
     networks:
       - flowable-mysql
     depends_on:
-      config:
-        condition: service_healthy
+      - config
+      - registry
+      - gateway
+      - mysql-db
+      - rabbitmq
+#      config:
+#        condition: service_healthy
+#      registry:
+#        condition: service_healthy
+#      gateway:
+#        condition: service_healthy
 
   registry:
     environment:
@@ -62,8 +71,9 @@ services:
       context: registry/
     restart: always
     depends_on:
-      config:
-        condition: service_healthy
+      - config
+#      config:
+#        condition: service_healthy
     ports:
       - 8761:8761
     logging:
@@ -80,8 +90,9 @@ services:
       context: gateway/
     restart: always
     depends_on:
-      config:
-        condition: service_healthy
+      - config
+#      config:
+#        condition: service_healthy
     ports:
       - 80:4000
     logging:

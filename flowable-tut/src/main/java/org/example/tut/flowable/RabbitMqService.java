@@ -23,8 +23,6 @@ public class RabbitMqService {
     RuntimeService runtimeService;
     TaskService taskService;
     ProcessEngine processEngine;
-//    @Autowired
-//    RabbitMqPublisher rabbitMqPublisher;
 
     public static final String MY_TEST_PROCESS = "mqTestProcess";
 
@@ -51,11 +49,6 @@ public class RabbitMqService {
 
         String execId = executions.get(0).getId();
         System.out.println("Execution id: " + execId);
-//        System.out.println("Send message to queue");
-//        rabbitMqPublisher.sendMessage(execId,"Default message");
-
-//        System.out.println("Suspend the whole process");
-//        suspendAProcess(pid);
 
         return new ProcessInstanceResponse(processInstance.getId(), processInstance.isEnded());
     }
@@ -63,6 +56,7 @@ public class RabbitMqService {
 
     public ProcessInstanceResponse continueMqTestProcess(String processIntanceId) {
 
+        // Should do some checks whether the process is pending as our wanted service tasks (wait task or triggerable task)
         System.out.println("Continue " + MY_TEST_PROCESS + " with process instance id: " +processIntanceId);
         runtimeService.trigger(processIntanceId);
 

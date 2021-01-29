@@ -22,12 +22,19 @@ public class CMMNController {
         return caseInstance.getId();
     }
 
+    @GetMapping("/startrpc")
+    public String startrpc() {
+        CaseInstance caseInstance = cmmnService.startrpc();
+        return "case id: " + caseInstance.getId();
+    }
+
+
     @GetMapping("/complete/{caseId}/{taskId}")
     public String complete(
             @PathVariable("caseId") String caseId, @PathVariable("taskId") String taskId
     ) {
         cmmnService.complete(caseId,taskId);
-        return caseId + taskId + " completed";
+        return caseId + " - "  + taskId + " completed";
     }
 
     @GetMapping("/trigger/{planInstanceId}")
